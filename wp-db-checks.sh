@@ -30,3 +30,6 @@ mysqlcheck -c $SQL_DB  -u $SQL_USER -p$SQL_PASS #analyze db, this is better bc i
 
 ## wp cli checks ##
 wp db size --size_format=mb #get db size
+wp plugin list
+wp theme list
+wp core version
