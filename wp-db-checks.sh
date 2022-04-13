@@ -21,10 +21,11 @@ select * from $DB_PREFIX_comments  where comment_approved = 'spam';
 select * from $DB_PREFIX_comments  where comment_approved = 'trash';
 select * from $DB_PREFIX_comments  where comment_approved = 'pingback';
 select * from $DB_PREFIX_comments  where comment_approved = '0';
-"
+" > db-checks.txt
 ##check for deadlocks##
 #expired woo sessions#
 #check for indexes
+#check charset 
 
 ## mysqlcheck ##
 mysqlcheck -c $SQL_DB  -u $SQL_USER -p$SQL_PASS #check database for corruption
