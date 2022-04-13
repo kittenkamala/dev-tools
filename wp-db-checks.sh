@@ -23,13 +23,9 @@ select * from $DB_PREFIX_comments  where comment_approved = 'pingback';
 select * from $DB_PREFIX_comments  where comment_approved = '0';
 "
 ##check for deadlocks##
+#expired woo sessions#
+#check for indexes
 
 ## mysqlcheck ##
 mysqlcheck -c $SQL_DB  -u $SQL_USER -p$SQL_PASS #check database for corruption
 mysqlcheck -c $SQL_DB  -u $SQL_USER -p$SQL_PASS #analyze db, this is better bc it locks table instead of duplicating
-
-## wp cli checks ##
-wp db size --size_format=mb #get db size
-wp plugin list
-wp theme list
-wp core version
