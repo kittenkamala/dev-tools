@@ -26,6 +26,7 @@ select * from $DB_PREFIX_comments  where comment_approved = '0';
 #expired woo sessions#
 #check for indexes
 #check charset 
+#show autoload details
 
 ## mysqlcheck ##
 mysqlcheck -c $SQL_DB  -u $SQL_USER -p$SQL_PASS #check database for corruption
