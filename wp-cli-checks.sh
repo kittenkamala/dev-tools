@@ -8,9 +8,9 @@ source ./env-vars.sh
 
 
 ## wp cli checks ##
-terminus wp $DOMAIN.$ENV db size --size_format=mb #get db size
-terminus wp $DOMAIN.$ENV plugin list #get plugin details
-terminus wp $DOMAIN.$ENV theme list #get theme details
-terminus wp $DOMAIN.$ENV core version
+terminus wp $SITE.$ENV db size --size_format=mb #get db size
+terminus wp $SITE.$ENV plugin list #get plugin details
+terminus wp $SITE.$ENV theme list #get theme details
+terminus wp $SITE.$ENV core version
 #check for transients
 #check cron health
