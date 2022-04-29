@@ -27,6 +27,7 @@ select * from $DB_PREFIX_comments  where comment_approved = '0';
 #check for indexes
 #check charset 
 #show autoload details
+#add Lindsey's checks from confluence
 
 ## mysqlcheck ##
 mysqlcheck -c $SQL_DB  -u $SQL_USER -p$SQL_PASS #check database for corruption

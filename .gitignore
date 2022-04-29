@@ -1,6 +1,6 @@
 
 #do not push up security-sensative environment variables#
-#env-vars.sh
+env-vars.sh
 
 #IDE Files#
 .DS_Store
