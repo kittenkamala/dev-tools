@@ -16,23 +16,30 @@ mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="show
 echo "-- MyISAM Tables --" >> wp-db-checks-$SITE.txt
 mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="show table status where engine = 'myisam';" >> wp-db-checks-$SITE.txt
 
-##WP Specific db bloat checks##
+## WordPress Specific database bloat checks ##
 
 echo "-- wp_options wp_sessions rows --" >> wp-db-checks-$SITE.txt
-mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select * from $DB_PREFIX_options where option_name = '%_wp_session_%';"
+mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select * from $DB_PREFIX_options where option_name = '%_wp_session_%';" >> wp-db-checks-$SITE.txt
 echo "-- wp_options autoloads --" >> wp-db-checks-$SITE.txt
-mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="SELECT * FROM $DB_PREFIX_options WHERE autoload = 'yes';"
-
-mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="SELECT * FROM $DB_PREFIX_options WHERE autoload = 'yes' AND option_name like '%transient%';
-select * from $DB_PREFIX_posts where post_type = 'revision';
-select * from $DB_PREFIX_posts where post_type = 'trash';
-select * from from $DB_PREFIX_term_relationships where _term_taxonomy_id=1 and object_id not in (select id from $DB_PREFIX_posts);
-select * from $DB_PREFIX_postmeta as m left join prefix_posts as p on m.post_id = p.id where p.id is null;
-select * from $DB_PREFIX_comments  where comment_approved = 'spam';
-select * from $DB_PREFIX_comments  where comment_approved = 'trash';
-select * from $DB_PREFIX_comments  where comment_approved = 'pingback';
-select * from $DB_PREFIX_comments  where comment_approved = '0';
-" >> wp-db-checks-$SITE.txt
+mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="SELECT * FROM $DB_PREFIX_options WHERE autoload = 'yes';" >> wp-db-checks-$SITE.txt
+echo "-- wp_options autoload transients --" >> wp-db-checks-$SITE.txt
+mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="SELECT * FROM $DB_PREFIX_options WHERE autoload = 'yes' AND option_name like '%transient%';" >> wp-db-checks-$SITE.txt
+echo "-- post revisions --" >> wp-db-checks-$SITE.txt
+mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select * from $DB_PREFIX_posts where post_type = 'revision';" >> wp-db-checks-$SITE.txt
+echo "-- post revisions --" >> wp-db-checks-$SITE.txt
+mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select * from $DB_PREFIX_posts where post_type = 'trash';" >> wp-db-checks-$SITE.txt
+echo "-- post revisions --" >> wp-db-checks-$SITE.txt
+mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select * from from $DB_PREFIX_term_relationships where _term_taxonomy_id=1 and object_id not in (select id from $DB_PREFIX_posts);" >> wp-db-checks-$SITE.txt
+echo "-- post revisions --" >> wp-db-checks-$SITE.txt
+mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select * from $DB_PREFIX_postmeta as m left join prefix_posts as p on m.post_id = p.id where p.id is null;" >> wp-db-checks-$SITE.txt
+echo "-- spam posts --" >> wp-db-checks-$SITE.txt
+mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select * from $DB_PREFIX_comments  where comment_approved = 'spam';" >> wp-db-checks-$SITE.txt
+echo "-- trash posts --" >> wp-db-checks-$SITE.txt
+mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select * from $DB_PREFIX_comments  where comment_approved = 'trash';" >> wp-db-checks-$SITE.txt
+echo "-- pingbacks --" >> wp-db-checks-$SITE.txt
+mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select * from $DB_PREFIX_comments  where comment_approved = 'pingback';" >> wp-db-checks-$SITE.txt
+echo "-- approved comments --" >> wp-db-checks-$SITE.txt
+mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select * from $DB_PREFIX_comments  where comment_approved = '0';" >> wp-db-checks-$SITE.txt
 ##check for deadlocks##
 #expired woo sessions#
 #check for indexes
