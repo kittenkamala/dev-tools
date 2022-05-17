@@ -1,6 +1,11 @@
 
 #do not push up security-sensative environment variables#
 env-vars.sh
+env-vars-*.sh
+
+#keep output local
+wp-db-checks-*.txt
+wpcli-audit-*.txt
 
 #IDE Files#
 .DS_Store
