@@ -46,5 +46,5 @@ echo "-- wp_options autoload count --" >> wpcli-audit-$SITE.txt
 terminus wp $SITE.$ENV -- option list --autoload=on --format=total_bytes >> wpcli-audit-$SITE.txt #get size of all autoloads
 echo "--wp_options largest transients --" >> wpcli-audit-$SITE.txt
 terminus wp $SITE.$ENV -- option list --search="*_transient_*" --fields=option_name,size_bytes | sort -n -k 2 | tail >> wpcli-audit-$SITE.txt #find biggest transients
-echo "-- wp_options list of all options --" >> wpcli-audit-$SITE.txt
+echo "-- wp_options list all options --" >> wpcli-audit-$SITE.txt
 terminus wp $SITE.$ENV -- option list >> wpcli-audit-$SITE.txt #spit out options in db

@@ -16,7 +16,7 @@ mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="show
 echo "-- MyISAM Tables --" >> wp-db-checks-$SITE.txt
 mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="show table status where engine = 'myisam';" >> wp-db-checks-$SITE.txt
 
-##WP Specific db bloat checks##
+## WordPress Specific database bloat checks ##
 
 echo "-- wp_options wp_sessions rows --" >> wp-db-checks-$SITE.txt
 mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select * from $DB_PREFIX_options where option_name = '%_wp_session_%';" >> wp-db-checks-$SITE.txt
