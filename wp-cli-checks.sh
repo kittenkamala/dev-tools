@@ -48,3 +48,5 @@ echo "--wp_options largest transients --" >> wpcli-audit-$SITE.txt
 terminus wp $SITE.$ENV -- option list --search="*_transient_*" --fields=option_name,size_bytes | sort -n -k 2 | tail >> wpcli-audit-$SITE.txt #find biggest transients
 echo "-- wp_options list all options --" >> wpcli-audit-$SITE.txt
 terminus wp $SITE.$ENV -- option list >> wpcli-audit-$SITE.txt #spit out options in db
+
+#add this check -- wp transient type ##tells us if transients API is using object cache or database
