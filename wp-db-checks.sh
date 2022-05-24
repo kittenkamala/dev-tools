@@ -51,13 +51,15 @@ mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="sele
 echo "-- trash posts --" >> wp-db-checks-$SITE.txt
 mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select count(*) from ${DB_PREFIX}_posts where post_status = 'trash';" >> wp-db-checks-$SITE.txt
 #stale relationships and post meta
-echo "-- stale relationships --" >> wp-db-checks-$SITE.txt
-mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select count(*) from from ${DB_PREFIX}_term_relationships where ${DB_PREFIX}_term_taxonomy_id=1 and object_id not in (select id from ${DB_PREFIX}_posts);" >> wp-db-checks-$SITE.txt
+echo "-- stale term relationships --" >> wp-db-checks-$SITE.txt
+mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="SELECT COUNT(*) from ${DB_PREFIX}_term_relationships WHERE object_id NOT IN (SELECT ID FROM ${DB_PREFIX}_posts);" >> wp-db-checks-$SITE.txt
 echo "--  stale post meta --" >> wp-db-checks-$SITE.txt
 mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select count(*) from ${DB_PREFIX}_postmeta as m left join ${DB_PREFIX}_posts as p on m.post_id = p.id where p.id is null;" >> wp-db-checks-$SITE.txt
 #spam
 echo "-- spam posts --" >> wp-db-checks-$SITE.txt
 mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select count(*) from ${DB_PREFIX}_comments where comment_approved = 'spam';" >> wp-db-checks-$SITE.txt
+#oembed cache
+mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="SELECT * FROM `wp_posts` WHERE `post_type`='oembed_cache';"  >> wp-db-checks-$SITE.txt
 ##Comments
 #trash
 echo "-- trash comments --" >> wp-db-checks-$SITE.txt
@@ -99,7 +101,8 @@ where exists (
 
 ##check for slow queries ##
 echo "Slow Queries" && echo "-- Slow Queries --" >> wp-db-checks-$SITE.txt
-mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="SELECT SQL_CALC_FOUND_ROWS ${DATABASE}.${DB_PREFIX}_posts.ID;" >> wp-db-checks-$SITE.txt
+##this one needs work
+mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="SELECT SQL_CALC_FOUND_ROWS ${DB_PREFIX}_posts.ID;" >> wp-db-checks-$SITE.txt
 
 ## Check Database Collation / Charset ##
 #global collation
@@ -113,16 +116,3 @@ SELECT
    default_collation_name
 FROM information_schema.schemata 
 WHERE schema_name = 'Pantheon';" >> wp-db-checks-$SITE.txt
-
-
-
-# SELECT CONCAT('ALTER TABLE `',  wp_options, '` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci;')
-# FROM information_schema.TABLES AS T, information_schema.`COLLATION_CHARACTER_SET_APPLICABILITY` AS C
-# WHERE C.collation_name = T.table_collation
-# AND T.table_schema = 'pantheon'
-# AND
-# (
-#     C.CHARACTER_SET_NAME != 'utf8mb4'
-#     OR
-#     C.COLLATION_NAME != 'utf8mb4_unicode_520_ci'
-# );
