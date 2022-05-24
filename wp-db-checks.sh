@@ -26,42 +26,48 @@ mysqlcheck -a -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB >> wp-d
 
 ### WordPress Specific database bloat checks ###
 echo "Bloat Checks" && echo "MySQL Bloat Checks" >> wp-db-checks-$SITE.txt
-## Options Autoload data
-echo "-- wp_options all autoloads --" >> wp-db-checks-$SITE.txt
-mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="SELECT * FROM ${DB_PREFIX}_options WHERE autoload LIKE 'yes';" >> wp-db-checks-$SITE.txt
+## Options Table Autoload data
+# echo "-- wp_options all autoloads --" >> wp-db-checks-$SITE.txt
+# mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="SELECT * FROM ${DB_PREFIX}_options WHERE autoload LIKE 'yes';" >> wp-db-checks-$SITE.txt
 #largest autoloads
 echo "-- wp_options largest autoloads --" >> wp-db-checks-$SITE.txt
 mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="SELECT LENGTH(option_value),option_name FROM ${DB_PREFIX}_options WHERE autoload='yes' ORDER BY length(option_value) DESC LIMIT 500;" >> wp-db-checks-$SITE.txt
+##autoload size
+echo "-- autoload total size in bytes --" >> wp-db-checks-$SITE.txt
+mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="SELECT SUM(LENGTH(option_value)) as autoload_size FROM ${DB_PREFIX}_options WHERE autoload='yes';" >> wp-db-checks-$SITE.txt
 #autoload transients
-echo "-- wp_options autoload transients --" >> wp-db-checks-$SITE.txt
-mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="SELECT * FROM ${DB_PREFIX}_options WHERE autoload = 'yes' AND option_name like '%transient%';" >> wp-db-checks-$SITE.txt
+echo "-- autoload transients --" >> wp-db-checks-$SITE.txt
+mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="SELECT * FROM ${DB_PREFIX}_options WHERE autoload='yes' AND option_name like '%transient%';" >> wp-db-checks-$SITE.txt
+#total rows where autoload='yes'
+echo "-- autoload total rows --" >> wp-db-checks-$SITE.txt
+mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="SELECT COUNT(*) from wp_options WHERE autoload='yes';" >> wp-db-checks-$SITE.txt
 
 ## WP Specific Post tables bloat checks
 echo "Posts bloat checks"
 #revisions
 echo "-- post revisions --" >> wp-db-checks-$SITE.txt
-mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select * from ${DB_PREFIX}_posts where post_type = 'revision';" >> wp-db-checks-$SITE.txt
+mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select count(*) from ${DB_PREFIX}_posts where post_type = 'revision';" >> wp-db-checks-$SITE.txt
 #trash
 echo "-- trash posts --" >> wp-db-checks-$SITE.txt
-mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select * from ${DB_PREFIX}_posts where post_status = 'trash';" >> wp-db-checks-$SITE.txt
+mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select count(*) from ${DB_PREFIX}_posts where post_status = 'trash';" >> wp-db-checks-$SITE.txt
 #stale relationships and post meta
 echo "-- stale relationships --" >> wp-db-checks-$SITE.txt
-mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select * from from ${DB_PREFIX}_term_relationships where _term_taxonomy_id=1 and object_id not in (select id from ${DB_PREFIX}_posts);" >> wp-db-checks-$SITE.txt
+mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select count(*) from from ${DB_PREFIX}_term_relationships where ${DB_PREFIX}_term_taxonomy_id=1 and object_id not in (select id from ${DB_PREFIX}_posts);" >> wp-db-checks-$SITE.txt
 echo "--  stale post meta --" >> wp-db-checks-$SITE.txt
-mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select * from ${DB_PREFIX}_postmeta as m left join ${DB_PREFIX}_posts as p on m.post_id = p.id where p.id is null;" >> wp-db-checks-$SITE.txt
+mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select count(*) from ${DB_PREFIX}_postmeta as m left join ${DB_PREFIX}_posts as p on m.post_id = p.id where p.id is null;" >> wp-db-checks-$SITE.txt
 #spam
 echo "-- spam posts --" >> wp-db-checks-$SITE.txt
-mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select * from ${DB_PREFIX}_comments where comment_approved = 'spam';" >> wp-db-checks-$SITE.txt
+mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select count(*) from ${DB_PREFIX}_comments where comment_approved = 'spam';" >> wp-db-checks-$SITE.txt
 ##Comments
 #trash
 echo "-- trash comments --" >> wp-db-checks-$SITE.txt
-mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select * from ${DB_PREFIX}_comments where comment_status = 'trash';" >> wp-db-checks-$SITE.txt
+mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select count(*) from ${DB_PREFIX}_comments where comment_status = 'trash';" >> wp-db-checks-$SITE.txt
 #pingbacks
 echo "-- pingbacks --" >> wp-db-checks-$SITE.txt
-mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select * from ${DB_PREFIX}_comments where comment_approved = 'pingback';" >> wp-db-checks-$SITE.txt
+mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select count(*) from ${DB_PREFIX}_comments where comment_approved = 'pingback';" >> wp-db-checks-$SITE.txt
 #unapproved
 echo "-- unapproved comments --" >> wp-db-checks-$SITE.txt
-mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select * from ${DB_PREFIX}_comments where comment_approved = '0';" >> wp-db-checks-$SITE.txt
+mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select count(*) from ${DB_PREFIX}_comments where comment_approved = '0';" >> wp-db-checks-$SITE.txt
 
 #expired sessions#
 echo "-- expired woo sessions --" >> wp-db-checks-$SITE.txt
@@ -92,6 +98,7 @@ where exists (
 );" >> wp-db-checks-$SITE.txt
 
 ##check for slow queries ##
+echo "Slow Queries" && echo "-- Slow Queries --" >> wp-db-checks-$SITE.txt
 mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="SELECT SQL_CALC_FOUND_ROWS ${DATABASE}.${DB_PREFIX}_posts.ID;" >> wp-db-checks-$SITE.txt
 
 ## Check Database Collation / Charset ##
