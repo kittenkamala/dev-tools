@@ -61,13 +61,13 @@ mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="sele
 #orphaned terms
 echo "--  Count orphaned terms --" >> wp-db-checks-$SITE.txt
 mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="SELECT COUNT(*) FROM wp_terms a INNER JOIN wp_term_taxonomy b ON a.term_id = b.term_id WHERE b.count = 0;" >> wp-db-checks-$SITE.txt
-#spam
-echo "-- spam posts --" >> wp-db-checks-$SITE.txt
-mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select count(*) from ${DB_PREFIX}_comments where comment_approved = 'spam';" >> wp-db-checks-$SITE.txt
 #oembed cache
 echo "-- oembed cache --" >> wp-db-checks-$SITE.txt
 mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="SELECT COUNT(*) FROM `wp_posts` WHERE `post_type`='oembed_cache';"  >> wp-db-checks-$SITE.txt
 ##Comments
+#spam
+echo "-- spam comments --" >> wp-db-checks-$SITE.txt
+mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select count(*) from ${DB_PREFIX}_comments where comment_approved = 'spam';" >> wp-db-checks-$SITE.txt
 #trash
 echo "-- trash comments --" >> wp-db-checks-$SITE.txt
 mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select count(*) from ${DB_PREFIX}_comments where comment_status = 'trash';" >> wp-db-checks-$SITE.txt
