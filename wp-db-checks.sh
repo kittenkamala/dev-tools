@@ -44,6 +44,9 @@ mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="SELE
 
 ## WP Specific Post tables bloat checks
 echo "Posts bloat checks"
+#total # of posts
+echo "-- total posts in wp_posts table --" >> wp-db-checks-$SITE.txt
+mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select count(*) from ${DB_PREFIX}_posts;" >> wp-db-checks-$SITE.txt
 #revisions
 echo "-- post revisions --" >> wp-db-checks-$SITE.txt
 mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select count(*) from ${DB_PREFIX}_posts where post_type = 'revision';" >> wp-db-checks-$SITE.txt
@@ -62,7 +65,8 @@ mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="SELE
 echo "-- spam posts --" >> wp-db-checks-$SITE.txt
 mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select count(*) from ${DB_PREFIX}_comments where comment_approved = 'spam';" >> wp-db-checks-$SITE.txt
 #oembed cache
-mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="SELECT * FROM `wp_posts` WHERE `post_type`='oembed_cache';"  >> wp-db-checks-$SITE.txt
+echo "-- oembed cache --" >> wp-db-checks-$SITE.txt
+mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="SELECT COUNT(*) FROM `wp_posts` WHERE `post_type`='oembed_cache';"  >> wp-db-checks-$SITE.txt
 ##Comments
 #trash
 echo "-- trash comments --" >> wp-db-checks-$SITE.txt
