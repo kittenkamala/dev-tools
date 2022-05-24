@@ -51,10 +51,13 @@ mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="sele
 echo "-- trash posts --" >> wp-db-checks-$SITE.txt
 mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select count(*) from ${DB_PREFIX}_posts where post_status = 'trash';" >> wp-db-checks-$SITE.txt
 #stale relationships and post meta
-echo "-- stale term relationships --" >> wp-db-checks-$SITE.txt
+echo "-- Count orphaned term relationships --" >> wp-db-checks-$SITE.txt
 mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="SELECT COUNT(*) from ${DB_PREFIX}_term_relationships WHERE object_id NOT IN (SELECT ID FROM ${DB_PREFIX}_posts);" >> wp-db-checks-$SITE.txt
-echo "--  stale post meta --" >> wp-db-checks-$SITE.txt
+echo "--  Count stale post meta --" >> wp-db-checks-$SITE.txt
 mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select count(*) from ${DB_PREFIX}_postmeta as m left join ${DB_PREFIX}_posts as p on m.post_id = p.id where p.id is null;" >> wp-db-checks-$SITE.txt
+#orphaned terms
+echo "--  Count orphaned terms --" >> wp-db-checks-$SITE.txt
+mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="SELECT COUNT(*) FROM wp_terms a INNER JOIN wp_term_taxonomy b ON a.term_id = b.term_id WHERE b.count = 0;" >> wp-db-checks-$SITE.txt
 #spam
 echo "-- spam posts --" >> wp-db-checks-$SITE.txt
 mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select count(*) from ${DB_PREFIX}_comments where comment_approved = 'spam';" >> wp-db-checks-$SITE.txt
@@ -66,7 +69,7 @@ echo "-- trash comments --" >> wp-db-checks-$SITE.txt
 mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select count(*) from ${DB_PREFIX}_comments where comment_status = 'trash';" >> wp-db-checks-$SITE.txt
 #pingbacks
 echo "-- pingbacks --" >> wp-db-checks-$SITE.txt
-mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select count(*) from ${DB_PREFIX}_comments where comment_approved = 'pingback';" >> wp-db-checks-$SITE.txt
+mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select count(*) from ${DB_PREFIX}_comments where comment_type = 'pingback';" >> wp-db-checks-$SITE.txt
 #unapproved
 echo "-- unapproved comments --" >> wp-db-checks-$SITE.txt
 mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="select count(*) from ${DB_PREFIX}_comments where comment_approved = '0';" >> wp-db-checks-$SITE.txt
