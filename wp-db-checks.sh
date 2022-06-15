@@ -90,8 +90,6 @@ echo "Check for Indexes"
 echo "-- Indexes on all tables --" >> wp-db-checks-$SITE.txt
 mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="SELECT DISTINCT TABLE_NAME, INDEX_NAME FROM INFORMATION_SCHEMA.STATISTICS;" >> wp-db-checks-$SITE.txt
 
-#check charset 
-
 #get size of every table
 echo "Table Size" && echo "-- Size of all tables --" >> wp-db-checks-$SITE.txt
 mysql -u $SQL_USER -p$SQL_PASS -h $SQL_HOST -P $SQL_PORT $SQL_DB --execute="SHOW TABLE STATUS;" >> wp-db-checks-$SITE.txt
